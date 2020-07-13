@@ -21,6 +21,7 @@ gem 'carrierwave', '~> 0.11.2'
 gem 'mini_magick', '~> 4.5', '>= 4.5.1'
 gem 'will_paginate', '~> 3.1.0'
 gem 'google_drive'
+gem 'therubyracer'
 # gem 'rack-timeout'
 
 group :development, :test do
