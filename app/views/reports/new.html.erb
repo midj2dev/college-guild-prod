@@ -1,0 +1,85 @@
+<%= form_for @report, url: {action: "create"} do |f| %>
+  <div class="form-group">
+    <%= f.label :title %>
+    <%= f.text_field :title, class: "form-control" %><br>
+  </div>
+
+  <div class="form-group">
+    <%= f.label :model, "Type of data to analyze" %>
+    <%= f.select :model, @model_opts, class: "form-control" %>
+  </div>
+
+  <div id="model-attributes">
+  </div>
+
+  <div id="conditions">
+    <%= query_row %>
+  </div>
+  <div id="add-condition">Add Condition</div>
+<% end %>
+
+<button id="run-report" class="btn btn-primary">Run Report</button>
+
+<div id="result-records">
+  
+</div>
+
+<script type="text/javascript">
+  $(document).ready(function(){
+    $("#add-condition").click(function(){
+      $("#conditions").append('<%= query_row %>')
+    });
+
+    function getAttrs(model) {
+      $.get({
+        url: 'attrs',
+        data: {
+          model: model
+        }
+      }, function(attrs) {
+        $("#model-attributes").html('')
+        var i;
+        for (i = 0; i < attrs.length; i++) {
+          $("#model-attributes").append('<span class="attr-button">' + attrs[i] + '</span>');
+        }
+      })
+    }
+
+    getAttrs('Volunteer');
+    $("#report_model").on('change', function(e) {
+      var model = e.target.value;
+      getAttrs(model);
+    });
+
+    $('body').on('click', '.attr-button', function(e){
+      $(".query-attribute").last().val(e.target.textContent);
+    })
+
+    $("#run-report").click(function(){
+      var conditions = [];
+      $("#conditions").children('div').each(function(){
+        var attribute = $(this).find(".query-attribute").val();
+        var comparison = $(this).find("select").val();
+        var value = $(this).find(".query-value").val();
+        conditions.push({
+          attribute: attribute,
+          comparison: comparison,
+          value: value
+        });
+      });
+
+      var data = {
+        report: {
+          title: $("#report_title").val(),
+          model: $("#report_model").val(),
+          conditions: conditions
+        } 
+      }
+      $.ajax({
+        method: 'POST',
+        url: '/reports',
+        data: data
+      }); 
+    });
+  })
+</script>

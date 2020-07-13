@@ -1,0 +1,156 @@
+<% provide(:title, 'Student Profile') %>
+
+<div class="envelope-tab">
+	<%= link_to "Edit", edit_prisoner_path(@prisoner), class: "btn btn-primary" %>
+</div>
+
+<div class="envelope clearfix">
+	<div class="col-sm-2"><img src="https://s3.amazonaws.com/collegeguild/vol_profile.jpg" class="img-responsive"></div>
+	<div class="col-sm-10 basic-info">
+		<div>Name: <%= @prisoner.name %></div>
+		<div>ID: <%= @prisoner.prison_id %></div>
+		<div>
+			<span>Address:</span> 
+			<span>
+				<%= @prisoner.full_address_1 %><br>
+				<%= @prisoner.full_address_2 %>
+			</span>
+		</div>
+		<div>Comments: <%= @prisoner.comments %></div>
+		<div>Dictionary Sent: <%= @prisoner.dictionary ? "Yes #{@prisoner.dictionary_sent.strftime('%m/%d/%y')}" : "No" %></div>
+	</div>
+	<% unless @prisoner.enrollment_date %>
+		<div class="col-sm-12">
+			 <%= simple_form_for @prisoner, url: "/prisoners/#{@prisoner.id}", method: 'patch' do |f| %>
+			 	<input type="hidden" name="prisoner[enrollment_date]" value="<%= Date.today() %>">
+				<%= f.submit 'Take off Waitlist', class: "btn btn-primary" %>
+			<% end %>
+		</div>
+	<% end %>
+	<div class="col-sm-12">
+		<h3 style="text-align: center;">Add Unit</h3>
+		<%= render 'units/create' %>
+	</div>
+	<% if @units %>
+		<div class="col-sm-12">
+			<h3 style="text-align: center; margin-top: 10px;">Units</h3>
+			<table id="prisoner-show-table" class="table table-bordered">
+				<thead>
+					<tr>
+						<td>Reader Name</td>
+						<td>Status</td>
+						<td>Course</td>
+						<td>Course Unit</td>
+						<td>Mailing Date</td>
+						<td>Return Date</td>
+						<td></td>
+					</tr>
+				</thead>
+				<tbody>
+					<% @units.each do |unit| %>
+						<% unless unit.course.nil? %>
+						<tr>
+							<td><%= unit.volunteer.name if unit.volunteer %></td>
+							<td><%= unit.status %></td>
+							<td><%= unit.course.title if unit.course %></td>
+							<td><%= unit.sub_course %></td>
+							<td><%= unit.mailing_date.strftime('%m/%d/%y') if unit.mailing_date %></td>
+							<td><%= unit.return_date.strftime('%m/%d/%y') if unit.return_date %></td>
+							<td><%= link_to "Unit Page", unit_path(unit), class: "btn btn-primary" %></td>
+						</tr>
+						<% end %>
+					<% end %>
+				</tbody>
+			</table>
+		</div>
+	<% end %>
+	<div class="col-sm-12">
+		<div class="update-comments">
+			<%= simple_form_for @prisoner, url: "/prisoners/#{@prisoner.id}", method: 'patch' do |f| %>
+				<%= f.input :comments, as: :text %>
+				<%= f.submit 'Update Comments', class: "btn btn-primary" %>
+			<% end %>
+		</div>
+	</div>
+	<% unless @prisoner.dictionary %>
+		<div class="col-sm-12">
+			<div id="add-dictionary">
+				<p>Submit when a dictionary has been sent</p>
+				<%= simple_form_for @prisoner, url: "/dictionary", method: 'post' do |f| %>
+					<input name="prisoner[id]" type="hidden" value="<%= @prisoner.id %>">
+					<%= f.submit 'Dictionary Sent', class: "btn btn-primary" %>
+				<% end %>
+			</div>
+		</div>
+	<% end %>
+	<div class="col-sm-12">
+		<div id="course-completion">
+			<h3 style="text-align: center;">Course Completion</h3>
+			<% puts @courses %>
+			<% @all_courses.each do |course, sub_courses| %>
+				<div class="col-sm-4">
+					<div class="course-block">
+						<h4><%= course %></h4>
+						<% sub_courses.each do |sub_course| %>
+							<% status = nil %>
+							<% @prisoner.units.each do |unit| %>
+								<% if unit.course %>
+									<% if unit.course.title == course && unit.sub_course == sub_course %>
+										<% unit.status == "Completed" ? status = "course-completed" : "in-progress" %>
+									<% end %>
+								<% end %>
+							<% end %>
+							<div class="<%= status %>"><%= sub_course %></div>
+						<% end %>
+					</div>
+				</div>
+			<% end %>
+		</div>
+	</div>
+	<div class="col-sm-12">
+		<% if @prisoner.certificates.length > 1 %>
+			<h3 style="text-align: center">Certificates</h3>
+			<% @prisoner.certificates.each do |cert| %>
+				<% if cert.id %>
+					<div class="col-sm-4">
+						<div class="cert-box">
+							<h5>Course: <%= cert.course.title %></h5>
+							<p>Mailing Date: <%= cert.mailing_date.strftime('%m/%d/%y') %></p>
+						</div>
+					</div>
+				<% end %>
+			<% end %>
+		<% end %> 
+	</div>
+	<div class="col-sm-12">
+		<h3 style="text-align: center;">Add Certificate</h3>
+		<div id="add-certificate">
+			<%= simple_form_for @certificate, url: ('/' + @prisoner.id.to_s + '/certificate'), method: 'post' do |f| %>
+				<%= f.association :course, as: :select %>
+				<%= f.button :submit, class: 'btn btn-warning' %>
+			<% end %>
+		</div>
+	</div>
+	<div class="col-sm-12" id="volunteer-list">
+		<h3>Volunteers</h3>
+		<% @prisoner.volunteers.uniq.each do |volunteer| %>
+			<div class="name-bar" id="name-bar-<%= volunteer.id %>">
+				<%= volunteer.name %>
+				<span class="glyphicon glyphicon-menu-down"></span>
+			</div>
+			<div class="hidden-info" id="hidden-name-bar-<%= volunteer.id %>">
+				<%= volunteer.email %><br>
+			</div>
+		<% end %>
+	</div>
+</div>
+
+<script type="text/javascript">
+	$(document).ready(function(){
+		$("#volunteer-list .name-bar").click(function(){
+			var id = $(this).attr("id");
+			$("#hidden-" + id).toggle();
+		});
+		$("#prisoner-show-table").DataTable({})
+	})
+</script>

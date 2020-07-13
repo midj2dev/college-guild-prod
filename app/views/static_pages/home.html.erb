@@ -1,0 +1,31 @@
+<% provide(:title, "Home") %>
+
+<ul class="nav nav-tabs">
+  <li class="active"><a data-toggle="tab" href="#new-unit">New Student</a></li>
+  <li><a data-toggle="tab" href="#new-vol">New Volunteer</a></li>
+</ul>
+
+<div class="tab-content">
+	<div id="new-unit" class="tab-pane fade in active">
+		<div class="why-here">Find or Add Student</div>
+		<div class="col-sm-8">
+			<%= render 'prisoners/new' %>
+		</div>
+		<div class="col-sm-4">
+			<%= link_to "Student Already Exists", prisoners_path, class: "btn-lg btn-primary" %>
+		</div>
+	</div>
+	<div id="new-vol" class="tab-pane fade">
+		<div class="col-sm-8 col-sm-offset-2">
+			<%= render 'volunteers/new' %>
+		</div>
+	</div>
+</div>
+
+<div class="col-sm-12">
+	<hr>
+
+	<div class="export-link">
+		<%= link_to("Export Certificate Data", certificate_index_path(format: :csv)) %>
+	</div>
+</div>

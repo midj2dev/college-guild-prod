@@ -1,0 +1,127 @@
+<% provide(:title, 'Volunteer Profile') %>
+
+<div class="envelope-tab">
+	<%= link_to "Edit", edit_volunteer_path(@volunteer), class: "btn btn-primary" %>
+</div>
+
+<div class="envelope clearfix">
+	<div class="col-sm-2"><img src="https://s3.amazonaws.com/collegeguild/vol_profile.jpg" class="img-responsive"></div>
+	<div class="col-sm-10 basic-info">
+		<div>Name: <%= @volunteer.name %></div>
+		<div>Email: <%= @volunteer.email %></div>
+		<div class="courses">Courses:
+			<% if @courses != "All Courses" %>
+				<% @courses.each do |course| %>
+					<span><%= course.title %></span>
+				<% end %>
+			<% else %>
+				<span><%= @courses %></span>
+			<% end %>
+		</div>
+		<div>Comments: <%= @volunteer.comments %></div>
+		<% if @vacation %>
+			<div>Unavailable From: <% @vacation.each do |k,v| %><span><%= k.to_date.strftime('%m/%d/%y') %> - <%= v.to_date.strftime('%m/%d/%y') %></span><br><% end %></div>
+		<% end %>
+	</div>
+	<div class="col-sm-12">
+		<table id="volunteer-show-table" class="table table-bordered">
+			<thead>
+				<tr>
+					<td>Student Name</td>
+					<td>Status</td>
+					<td>Course</td>
+					<td>Course Unit</td>
+					<td>Reader Mailing Date</td>
+					<td>Reader Return Date</td>
+				</tr>
+			</thead>
+			<tbody>
+				<% @units.each do |unit| %>
+					<% if unit.late? %>
+						<tr class="late-unit show-tr" href="<%= unit_path(unit) %>">
+						<td><%= unit.prisoner.name %></td>
+						<td>Late</td>
+					<% else %>
+						<tr class="<%= 'waiting-unit' if unit.status == 'Waiting on Volunteer' %> show-tr" href="<%= unit_path(unit) %>">
+						<td><%= unit.prisoner.name %></td>
+						<td><%= unit.status %></td>
+					<% end %>
+						<td><%= unit.course.title %></td>
+						<td><%= unit.sub_course %></td>
+						<td><%= unit.reader_mailing_date.strftime('%m/%d/%y') %></td>
+						<td><%= unit.reader_return_date.strftime('%m/%d/%y') if unit.reader_return_date %></td>
+					</tr>
+				<% end %>
+			</tbody>
+		</table>
+	</div>
+	<div class="col-sm-12">
+		<div class="update-comments">
+			<%= simple_form_for @volunteer, url: "/volunteers/#{@volunteer.id}", method: 'patch' do |f| %>
+				<%= f.input :comments, as: :text %>
+				<%= f.submit 'Update Comments', class: "btn btn-primary" %>
+			<% end %>
+		</div>
+	</div>
+	<div class="col-sm-12">
+		<div id="vacation-add">
+			<h3>Add Vacation or Break</h3>
+			<form action="/vacation" method="POST">
+				<input name="volunteer[id]" type="hidden" value="<%= @volunteer.id %>">
+				<label>Start Date</label>
+				<input name="volunteer[vacation_1]" type="date" class="date form-control" required>
+				<label>End Date</label>
+				<input name="volunteer[vacation_2]" type="date" class="date form-control" required>
+				<input type="submit" class="btn btn-primary" value="Add Vacation">
+			</form>
+		</div>
+		<div id="vacation-delete">
+			<% if @vacation %>
+				<% @vacation.each do |k,v| %>
+					<div class="vacation-delete-row">
+						<form action="/delete_vacation" method="POST">
+							<input name="volunteer[id]" type="hidden" value="<%= @volunteer.id %>">
+							<input name="volunteer[vac1]" type="hidden" value="<%= k %>">
+							<input name="volunteer[vac2]" type="hidden" value="<%= v %>">
+							<span><%= k.to_date.strftime('%m/%d/%y') %> - </span>
+							<span><%= v.to_date.strftime('%m/%d/%y') %></span>
+							<input type="submit" value="Delete Vacation" class="btn btn-warning">
+						</form>
+					</div>
+				<% end %>
+			<% end %>
+		</div>
+	</div>
+	<div class="col-sm-12" id="student-list">
+		<h3>Students</h3>
+		<% @prisoners.each do |prisoner| %>
+			<div class="name-bar" id="name-bar-<%= prisoner.id %>">
+				<%= prisoner.name %>
+				<span class="glyphicon glyphicon-menu-down"></span>
+			</div>
+			<div class="hidden-info" id="hidden-name-bar-<%= prisoner.id %>">
+				<%= prisoner.full_address_1 %><br>
+				<%= prisoner.full_address_2 %>
+			</div>
+		<% end %>
+	</div>
+</div>
+
+<script type="text/javascript">
+	$(document).ready(function(){
+		$("#volunteer-show-table").DataTable({})
+		$("#student-list .name-bar").click(function(){
+			var id = $(this).attr("id");
+			$("#hidden-" + id).toggle();
+		});
+		//console.log(parseInt($(".unit-speed").html()))
+		$(".unit-speed").each(function(i){
+			if (parseInt($(this).html()) > 20) {
+				$(this).css("color", "red")
+			}
+		});
+		$(".show-tr").click(function(){
+			window.location.href = $(this).attr("href")
+		})
+	})
+</script>

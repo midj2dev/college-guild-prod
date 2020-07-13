@@ -1,0 +1,35 @@
+<% provide(:title, "Volunteer Index") %>
+
+<div class="export-link">
+	<%= link_to("Export Data", volunteers_path(format: :csv)) %>
+</div>
+
+<table id="datatable-volunteer" class="table table-striped table-bordered">
+	<thead>
+		<tr>
+			<td>First Name</td>
+			<td>Last Name</td>
+			<td>Email</td>
+			<td></td>
+		</tr>
+	</thead>
+	<tbody>
+		<% @volunteers.each do |volunteer| %>
+			<tr class="table-row">
+				<td><%= volunteer.first_name %></td>
+				<td><%= volunteer.last_name %></td>
+				<td><%= volunteer.email %></td>
+				<td><%= link_to "Profile", volunteer_path(volunteer), class: "btn btn-primary" %></td>
+			</tr>
+		<% end %>
+	</tbody>
+</table>
+
+<script type="text/javascript">
+	$(document).ready(function(){
+		$("#datatable-volunteer").DataTable({})
+		$(".clickable-row").click(function(){
+			window.document.location = $(this).data("href");
+		})
+	})
+</script>

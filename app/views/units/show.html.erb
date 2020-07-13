@@ -1,0 +1,81 @@
+<% provide(:title, "Unit #{@title if @title}") %>
+
+<div class="col-sm-12">
+	<div id="unit-box" class="clearfix">
+		<div class="col-sm-5">
+		<p>Student: <%= link_to @unit.prisoner.name, prisoner_path(@unit.prisoner), id: "prisoner-name" %></p>
+		<p>Course: <%= @unit.course.title %></p>
+		<p>Unit: <%= @unit.sub_course %></p>
+		<p>Status: <%= @unit.status %></p>
+		<% unless @unit.volunteer.nil? %>
+			<p>Volunteer: <%= link_to @unit.volunteer.name, volunteer_path(@unit.volunteer) %></p>
+		<% end %>
+		</div>
+
+		<% if @unit.scan.url %>
+		<div class="col-sm-2">
+			<div>Student's Submission</div>
+			<div><%= link_to image_tag('pdf.png'), @unit.scan.url, id: "pdf-icon", target: "_blank" %></div>
+		</div>
+		<% end %>
+		<% if @unit.reader_scan.url %>
+			<div class="col-sm-2">
+			<div>Reader's Submission</div>
+			<div><%= link_to image_tag('pdf.png'), @unit.reader_scan.url, id: "pdf-icon", target: "_blank" %></div>
+			</div>
+		<% end %>
+		<form action="/units/destroy/<%= @unit.id %>" method="get">
+			<input type="submit" class="btn btn-danger" value="DELETE" onclick="return confirm('Are you sure you would like to delete this unit?')">
+		</form>
+	</div>
+</div>
+
+<% if @unit.status == "Waiting on Student" %>
+	<div class="col-sm-12">
+		<%= render 'units/update' %>
+	</div>
+<% elsif @unit.status == "Waiting on Volunteer" %>
+	<div class="col-sm-12">
+		<%= render 'units/reader_update' %>
+		<div>OR if unit is late</div>
+		<%= button_to "Reassign Unit", unit_assign_path(@unit, @unit.volunteer.id), method: "patch", class: "btn btn-danger" %>
+	</div>
+<% end %>
+
+<div class="col-sm-12">
+	<% if @unit.status == "Unassigned" %>
+		<h3 style="text-align: center;">Recommended Volunteers</h3>
+		<table id="datatable-volunteer-matches" class="table table-striped table-bordered">
+			<thead>
+				<tr>
+					<td>Name</td>
+					<td># Courses</td>
+					<td>Last Unit (Return Date, Student)</td>
+					<td>Comments</td>
+					<td></td>
+					<td></td>
+				</tr>
+			</thead>
+			<tbody>
+				<% @matches.each do |match| %>
+					<tr class="table-row">
+						<td><%= match[:volunteer].name %> <strong><%= "(Read this students last unit)" if match[:ranking] == 100.0 %></strong></td>
+						<td><%= match[:volunteer].courses.length %></td>
+						<td><%= match[:volunteer].units.last.reader_return_date.strftime('%m/%d/%y') if match[:volunteer].units.last %>, <%= match[:volunteer].units.last.prisoner.name if match[:volunteer].units.last %></td>
+						<td><%= match[:volunteer].comments %></td>
+						<td><%= button_to "Assign & Email", unit_volunteer_assigns_path(@unit,match[:volunteer],email: "true"), class: "btn btn-primary", data: { confirm: "This will send the reader an email with the student's work attached" } %></td>
+						<td><%= button_to "Assign", unit_volunteer_assigns_path(@unit,match[:volunteer]), class: "btn btn-primary", data: { confirm: "This will NOT send the reader an email, it must be mailed" } %></td>
+					</tr>
+				<% end %>
+			</tbody>
+		</table>
+	<% end %>
+</div>
+
+<script type="text/javascript">
+	$(document).ready(function(){
+		$("#datatable-volunteer-matches").DataTable({
+			"ordering": false
+		});
+	});
+</script>

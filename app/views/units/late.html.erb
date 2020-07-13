@@ -1,0 +1,32 @@
+<% provide(:title, "Late Units") %>
+
+<table id="datatable-unit-late" class="table table-bordered">
+	<thead>
+		<tr>
+			<td>Volunteer</td>
+			<td>Course</td>
+			<td>Course Unit</td>
+			<td>Reader Mailing Date</td>
+			<td>Status</td>
+			<td></td>
+		</tr>
+	</thead>
+	<tbody>
+		<% @units.each do |unit| %>
+			<tr class="table-row">
+				<td><%= unit.volunteer.name if unit.volunteer %></td>
+				<td><%= unit.course.title if unit.course %></td>
+				<td><%= unit.sub_course_abbr %></td>
+				<td><%= unit.reader_mailing_date %></td>
+				<td><%= unit.status %></td>
+				<td><%= link_to "Reassign", unit_path(unit), class: "btn btn-primary" %></td>
+			</tr>
+		<% end %>
+	</tbody>
+</table>
+
+<script type="text/javascript">
+	$(document).ready(function(){
+		$("#datatable-unit-late").DataTable({})
+	})
+</script>

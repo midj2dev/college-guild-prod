@@ -1,0 +1,9 @@
+<h3>Hi, <%= @volunteer.first_name %> Please return your comments within 7 days.</h3>
+
+<p>Thank You!</p>
+
+<p>Attached is <%= @prisoner.first_name %>'s <%= @unit.course.title %> <%= @unit.sub_course %> unit</p>
+
+<%= link_to "View Unit", @unit.scan.url %>
+
+<p>- College Guild</p>

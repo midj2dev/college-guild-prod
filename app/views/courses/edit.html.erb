@@ -1,0 +1,45 @@
+<div class="new-course-box">
+  <h2>Edit Course</h2>
+
+  <%= form_for @course, url: { action: 'update' } do |f| %>
+    <div class="form-group">
+      <%= f.label :title %>
+      <%= f.text_field :title, class: "form-control" %><br>
+    </div>
+
+    <div class="form-group">
+      <label>Sub Courses</label>
+      <div class="sub_course_wrapper">
+        <% @course.sub_courses.each_with_index do |sub_course, i| %>
+          <input class="form-control course_sub_course" type="text" name="course[sub_course_<%= i %>]" id="sub_course_<%= i %>" value="<%= sub_course %>">
+        <% end %>
+      </div>
+      <a id="add-sub-course">Add Subcourse</a>
+      <a id="rm-sub-course">Remove Subcourse</a>
+    </div>
+
+    <%= f.submit "Save Course" %>
+  <% end %>
+
+  <hr>
+
+  <%= button_to "Archive Course", { action: "destroy" }, form_class: "btn btn-danger button-to-button", data: { confirm: 'Are you sure?' }, method: :delete %>
+</div>
+
+<script type="text/javascript">
+  let count = <%= @course.sub_courses.length - 1 %>
+  function el(i) {
+    return '<input class="form-control course_sub_course" type="text" name="course[sub_course_' + i + ']" id="sub_course_' + i + '">'
+  }
+
+  $(document).ready(function() {
+    $("#add-sub-course").click(function() {
+      count += 1;
+      $('.sub_course_wrapper').append(el(count))
+    })
+    $("#rm-sub-course").click(function() {
+      $('#sub_course_' + count).remove();
+      count -= 1;
+    })
+  })
+</script>

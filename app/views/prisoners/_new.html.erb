@@ -1,0 +1,20 @@
+<div class="form-wrapper">
+	<h4>Add Student to Database</h4>
+	<% if @prisoner.errors.any? %>
+		<% @prisoner.errors.full_messages.each do |error| %>
+			<span class="error_text"><%= error %></span>
+		<% end %>
+	<% end %>
+	<%= simple_form_for @prisoner do |f| %>
+			<%= f.input :first_name, label: 'First Name' %>
+			<%= f.input :last_name, label: 'Last Name' %>
+			<%= f.input :prison_id, label: 'Prisoner ID' %>
+			<%= f.input :waitlist_date, as: :date %>
+			<%= f.input :address_1, label: 'Address Line 1' %>
+			<%= f.input :address_2, label: 'Address Line 2', required: false %>
+			<%= f.input :city %>
+			<%= f.input :state, collection: us_states %>
+			<%= f.input :zip %>
+			<%= f.button :submit, 'Save' , class: 'pull-right btn-lg btn-primary' %>
+	<% end %>
+</div>

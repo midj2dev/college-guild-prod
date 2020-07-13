@@ -1,0 +1,39 @@
+<div class="new-course-box">
+  <h2>Create New Course</h2>
+
+  <%= form_for @course, url: { action: 'create' } do |f| %>
+    <div class="form-group">
+      <%= f.label :title %>
+      <%= f.text_field :title, class: "form-control" %><br>
+    </div>
+
+    <div class="form-group">
+      <%= f.label :sub_courses %>
+      <div class="sub_course_wrapper">
+      </div>
+      <a id="add-sub-course">Add Subcourse</a>
+      <a id="rm-sub-course">Remove Subcourse</a>
+    </div>
+
+    <%= f.submit "Save Course" %>
+  <% end %>
+</div>
+
+<script type="text/javascript">
+  let count = 0
+  function el(i) {
+    return '<input class="form-control course_sub_course" type="text" name="course[sub_course_' + i + ']" id="sub_course_' + i + '">'
+  }
+
+  $(document).ready(function() {
+    $('.sub_course_wrapper').append(el(count))
+    $("#add-sub-course").click(function() {
+      count += 1;
+      $('.sub_course_wrapper').append(el(count))
+    })
+    $("#rm-sub-course").click(function() {
+      $('#sub_course_' + count).remove();
+      count -= 1;
+    })
+  })
+</script>

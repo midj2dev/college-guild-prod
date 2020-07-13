@@ -1,0 +1,100 @@
+<% provide(:title, "Unit Index") %>
+
+<div class="export-link">
+	<%= link_to("Export Data", units_path(format: :csv)) %>
+</div>
+
+<h3 style="text-align: center;">Waiting on Student</h3>
+<table id="datatable-unit-waiting-student" class="table table-bordered">
+	<thead>
+		<tr>
+			<td>Student</td>
+			<td>Course</td>
+			<td>Course Unit</td>
+			<td>Mailing Date</td>
+			<td>Status</td>
+			<td></td>
+		</tr>
+	</thead>
+	<tbody>
+		<% @waiting_student.each do |unit| %>
+			<tr class="table-row">
+				<td><%= unit.prisoner.name %></td>
+				<td><%= unit.course.try(:title) %></td>
+				<td><%= unit.sub_course_abbr %></td>
+				<td><%= unit.mailing_date %></td>
+				<td><%= unit.status %></td>
+				<td><%= link_to "Update", unit_path(unit), class: "btn btn-primary" %></td>
+			</tr>
+		<% end %>
+	</tbody>
+</table>
+
+<h3 style="text-align: center;">Unassigned Units</h3>
+<table id="datatable-unit-unassigned" class="table table-bordered">
+	<thead>
+		<tr>
+			<td>Student</td>
+			<td>Course</td>
+			<td>Course Unit</td>
+			<td>Mailing Date</td>
+			<td>Status</td>
+			<td></td>
+		</tr>
+	</thead>
+	<tbody>
+		<% @unassigned.each do |unit| %>
+			<tr class="table-row">
+				<td><%= unit.prisoner.name %></td>
+				<td><%= unit.course.title %></td>
+				<td><%= unit.sub_course_abbr %></td>
+				<td><%= unit.mailing_date %></td>
+				<td><%= unit.status %></td>
+				<td><%= link_to "Assign", unit_path(unit), class: "btn btn-primary" %></td>
+			</tr>
+		<% end %>
+	</tbody>
+</table>
+
+<h3 style="text-align: center;">Waiting on Volunteer</h3>
+<table id="datatable-unit-waiting" class="table table-bordered">
+	<thead>
+		<tr>
+			<td>Student</td>
+			<td>Volunteer</td>
+			<td>Course</td>
+			<td>Mailing Date</td>
+			<td>Status</td>
+			<td></td>
+		</tr>
+	</thead>
+	<tbody>
+		<% @waiting.each do |unit| %>
+			<tr class="table-row">
+				<td><%= unit.prisoner.name %></td>
+				<td><%= unit.volunteer.name if unit.volunteer %></td>
+				<td><%= unit.course.title %></td>
+				<td><%= unit.reader_mailing_date %></td>
+				<td><%= unit.status %></td>
+				<td><%= link_to "Reassign", unit_path(unit), class: "btn btn-primary" %></td>
+			</tr>
+		<% end %>
+	</tbody>
+</table>
+
+<hr>
+<div class="completed-units-link">
+	<%= link_to 'Completed Units', '/completed_units' %>
+</div>
+
+<script type="text/javascript">
+	$(document).ready(function(){
+		$("#datatable-unit-waiting-student").DataTable({});
+		$("#datatable-unit-unassigned").DataTable({});
+		$("#datatable-unit-waiting").DataTable({});
+		$("#datatable-unit").DataTable({});
+		$(".clickable-row").click(function(){
+			window.document.location = $(this).data("href");
+		})
+	})
+</script>

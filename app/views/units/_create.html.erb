@@ -1,0 +1,39 @@
+<div id="unit-create">
+	<% if @unit.errors.any? %>
+		<% @unit.errors.full_messages.each do |error| %>
+			<p class="error_text"><%= error %></p>
+		<% end %>
+	<% end %>
+	<%= simple_form_for @unit, url: prisoner_units_path(@prisoner), html: { multipart: true } do |f| %>
+		<%= f.input :mailing_date, as: :date %>
+		<label>Course</label>
+		<select class="form-control select optional" id="course" name="unit[course_id]">
+			<option value=""></option>
+			<%= Course.active.each do |course| %>
+				<option value="<%= course.id %>"><%= course.title %></option>
+			<% end %>
+		</select>
+		<hr>
+		<div id="sub_course"></div>
+		<%= f.button :submit, class: 'btn btn-warning' %>
+	<% end %>
+</div>
+
+<script type="text/javascript">
+	$(document).ready(function(){
+		var picked = false;
+		$("#course").change(function(e){
+			if (picked) {
+				$("#sub_course").empty();
+			}
+			$.get("/sub_course/" + $(this).val(), function(data, status){
+				$("#sub_course").append("<div>* Course Unit</div>");
+				$("#sub_course").append("<select id='sub_course_select' class='select required form-control' name='unit[sub_course]' style='margin-bottom:15px;'></select>");
+				for (i = 0; i < data.length; i++) {
+					$("#sub_course_select").append("<option value=" + i + ">" + data[i] + "</option>")
+				}
+			})
+			picked = true;
+		});
+	});
+</script>

@@ -1,0 +1,15 @@
+<header>
+	<div id="header">
+		<div id="banner"><h1>COLLEGE GUILD</h1></div>
+		<div>
+			<div>respect</div>
+			<div>reduces</div>
+			<div>recidivism</div>
+		</div>
+		<%= button_to "Logout", session_path(@current_user), method: :delete, class: 'btn btn-primary' %>
+	</div>
+</header>
+
+<div id="page-title">
+	<h2><%= yield(:title) %> Page</h2>
+</div>

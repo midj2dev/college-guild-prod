@@ -1,0 +1,34 @@
+<h3 style="text-align: center;">Completed</h3>
+
+<div class="completed-units">
+  <%# will_paginate @units %>
+
+  <table id="datatable-unit" class="table table-bordered">
+    <thead>
+      <tr>
+        <td>Student</td>
+        <td>Volunteer</td>
+        <td>Course</td>
+        <td>Status</td>
+        <td></td>
+      </tr>
+    </thead>
+    <tbody>
+      <% @units.each do |unit| %>
+        <tr class="table-row">
+          <td><%= unit.prisoner.name %></td>
+          <td><%= unit.volunteer.name if unit.volunteer %></td>
+          <td><%= unit.course.title %></td>
+          <td><%= unit.status %></td>
+          <td><%= link_to "View Unit", unit_path(unit), class: "btn btn-primary" %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+
+  <%# will_paginate @units %>
+</div>
+
+<script type="text/javascript">
+  $("#datatable-unit").DataTable({});
+</script>

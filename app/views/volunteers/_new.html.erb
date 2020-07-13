@@ -1,0 +1,23 @@
+<div class="form-wrapper">
+	<h4>Add New Volunteer to Database</h4>
+	<% if @volunteer.errors.any? %>
+		<% @volunteer.errors.full_messages.each do |error| %>
+			<p class="error_text"><%= error %></p>
+		<% end %>
+	<% end %>
+	<%= simple_form_for @volunteer do |f| %>
+		<%= f.input :first_name, label: 'First Name' %>
+		<%= f.input :last_name, label: 'Last Name' %>
+		<%= f.input :email, label: 'Email' %>
+		<input type="checkbox" id="checkAll"><label id="checkAllLabel">All Courses</label>
+		<%= f.association :courses, as: :check_boxes, label: 'Course List' %>
+		<%= f.button :submit, 'Save' , class: 'pull-right btn-lg btn-primary' %>
+	<% end %>
+</div> 
+
+<script type="text/javascript">
+	$("#checkAll").change(function () {
+	    $("input:checkbox").prop('checked', $(this).prop("checked"));
+	    console.log("hello?")
+	});
+</script>

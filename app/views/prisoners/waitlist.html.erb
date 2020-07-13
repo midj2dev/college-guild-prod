@@ -1,0 +1,34 @@
+<% provide(:title, "Waitlist") %>
+
+<h3 style="text-align: center;">Current Waitlist Length: <%= @prisoners.length %></h3>
+
+<table id="waitlist" class="table table-striped table-bordered">
+	<thead>
+		<tr>
+			<td>Name</td>
+			<td>Address</td>
+			<td>Prisoner ID</td>
+			<td>Waitlist Date</td>
+			<td>Comments</td>
+			<td></td>
+		</tr>
+	</thead>
+	<tbody>
+		<% @prisoners.each do |prisoner| %>
+			<tr class="table-row">
+				<td><%= prisoner.name %></td>
+				<td><%= prisoner.full_address_1 %><br><%= prisoner.full_address_2 %></td>
+				<td><%= prisoner.prison_id %></td>
+				<td><%= prisoner.waitlist_date %></td>
+				<td><%= prisoner.comments %></td>
+				<td><%= link_to "Profile", prisoner_path(prisoner), class: "btn btn-primary" %></td>
+			</tr>
+		<% end %>
+	</tbody>
+</table>
+
+<script type="text/javascript">
+	$(document).ready(function(){
+		$("#waitlist").DataTable({})
+	})
+</script>

@@ -1,0 +1,13 @@
+<div id="unit-update">
+	<h4> When Reader Has Returned Unit</h4>
+	<% if @unit.errors.any? %>
+		<% @unit.errors.full_messages.each do |error| %>
+			<p class="error_text"><%= error %></p>
+		<% end %>
+	<% end %>
+	<%= simple_form_for @unit, url: unit_path(@unit), html: { multipart: true } do |f| %>
+		<%= f.input :reader_return_date, as: :date %>
+		<%= f.file_field :reader_scan, label: "Upload PDF Scan" %>
+		<%= f.button :submit, class: 'btn btn-warning' %>
+	<% end %>
+</div>
