@@ -44,6 +44,6 @@ end
 
 group :production do
 	gem 'rails_12factor', 	'0.0.2'
-  gem 'puma',				'3.8.2'
+  gem 'puma',				'3.12.6'
 end
 
